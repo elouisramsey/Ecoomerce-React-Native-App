@@ -4,23 +4,25 @@ import {
   View,
   TouchableOpacity,
   ImageBackground,
-  ScrollView,
-  TouchableWithoutFeedback
+  ScrollView
 } from 'react-native'
 import React, { useEffect } from 'react'
 import tw from '../lib/tailwind'
 import Button from '../shared/Button'
 import { LogBox } from 'react-native'
-
+import { SafeAreaView } from 'react-native-safe-area-context'
 import { Ionicons, Feather } from '@expo/vector-icons'
 import  NewProducts  from '../components/New'
 import Bestseller from '../components/BestSeller'
 import { Categories } from '../components/Categories'
 import { useCartContext } from '../context/CartProvider'
+import InfiniteProducts from '../components/InfiniteProducts'
+import CustomSlider from '../components/carousel/CustomSlider'
+import data from '../components/carousel/data'
 
 const Home = ({ navigation }) => {
- const { numberOfItemsInCart, emptyCart } = useCartContext()
- console.log(numberOfItemsInCart)
+ const { numberOfItemsInCart } = useCartContext()
+
   useEffect(() => {
     LogBox.ignoreLogs(['VirtualizedLists should never be nested'])
   }, [])
@@ -29,10 +31,11 @@ const Home = ({ navigation }) => {
       console.log(e.nativeEvent.error)
     }
     return (
-      <View style={{ flex: 1 }}>
+      <View style={{ height: 500, width: '100%' }}>
         <View
           style={{
-            width: '100%'
+            width: '100%',
+            height: '100%'
           }}
         >
           <ImageBackground
@@ -41,19 +44,21 @@ const Home = ({ navigation }) => {
             source={require('../assets/images/beautiful-couch.jpg')}
             style={[tw`px-4 py-6`, styles.image]}
           >
-            <View style={tw`flex justify-between flex-row mb-5 mt-4`}>
+            <View
+              style={tw`flex justify-between items-center flex-row mb-5 mt-4`}
+            >
               <TouchableOpacity>
                 <Ionicons
                   name='menu-outline'
                   style={tw`text-gray-200 text-3xl`}
                 />
               </TouchableOpacity>
-              <TouchableOpacity onPress={() => emptyCart()}>
-                <Text style={[tw`text-tiny text-red-500 `, styles.paragraphs]}>
-                  reomve all
-                </Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={tw`relative`}>
+              <TouchableOpacity
+                style={tw`relative`}
+                onPress={() => {
+                  navigation.navigate('Cart')
+                }}
+              >
                 <Feather
                   name='shopping-bag'
                   style={tw`text-gray-200 text-2xl`}
@@ -107,12 +112,15 @@ const Home = ({ navigation }) => {
     )
   }
   return (
-    <ScrollView style={[tw`bg-white`]}>
-      {renderHeader()}
-      <NewProducts navigation={navigation} />
-      <Bestseller navigation={navigation} />
-      <Categories navigation={navigation} />
-    </ScrollView>
+    <SafeAreaView>
+      <ScrollView>
+        <CustomSlider data={data} navigation={navigation} />
+        <NewProducts navigation={navigation} />
+        <Bestseller navigation={navigation} />
+        <Categories navigation={navigation} />
+        <InfiniteProducts navigation={navigation} />
+      </ScrollView>
+    </SafeAreaView>
   )
 }
 
@@ -121,9 +129,6 @@ export default Home
 const styles = StyleSheet.create({
   paragraphs: {
     fontFamily: 'poppins'
-  },
-  container: {
-    backgroundColor: '#f1f2f6'
   },
   heading: {
     fontFamily: 'playfair'
@@ -137,9 +142,7 @@ const styles = StyleSheet.create({
   image: {
     flex: 1,
     resizeMode: 'cover',
-    // backgroundColor: 'rgba(255,0,0,0.2)',
     height: null,
     width: null
-    // opacity: 0.9
   }
 })

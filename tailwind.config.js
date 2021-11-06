@@ -20,6 +20,9 @@ module.exports = {
         success: '#3bbc9a',
         cartBG: 'rgb(197 195 195 / 40%);'
       },
+      borderColor: {
+        lightGrey: '#a5a5a5'
+      },
       textColor: {
         heroHead: 'rgba(0, 0, 0, 0.8)',
         softGrey: '#797979',
@@ -28,7 +31,7 @@ module.exports = {
         light: '#f5f5f5'
       },
       fontSize: {
-        tiny: '.687rem'
+        tiny: '.487rem'
       },
       rotate: {
         m45: '-45deg'
@@ -38,9 +41,9 @@ module.exports = {
       }
     }
   },
-  variants: {
-    extend: {}
-  }
+  // variants: {
+  //   extend: {}
+  // }
   // plugins: [
   //   require('@tailwindcss/forms')({
   //     strategy: 'class'

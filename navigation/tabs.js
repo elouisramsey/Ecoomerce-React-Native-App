@@ -5,12 +5,16 @@ import {
   Octicons,
   SimpleLineIcons,
   Fontisto,
-  Ionicons
+  Ionicons,
+  Feather
 } from '@expo/vector-icons'
 
 import tw from '../lib/tailwind'
 
 import Home from '../screens/Home'
+import Login from '../screens/Login'
+import Cart from '../screens/Cart'
+import Signup from '../screens/SignUp'
 
 const Tab = createBottomTabNavigator()
 
@@ -48,11 +52,23 @@ const Tabs = () => {
       />
       <Tab.Screen
         name='Bookmarks'
-        component={Home}
+        component={Signup}
         options={{
           tabBarIcon: ({ focused }) => (
             <Fontisto
               name='bookmark'
+              style={tw`${focused ? 'text-black ' : 'text-gray-400 '} text-2xl`}
+            />
+          )
+        }}
+      />
+      <Tab.Screen
+        name='Cart'
+        component={Cart}
+        options={{
+          tabBarIcon: ({ focused }) => (
+            <Feather
+              name='shopping-bag'
               style={tw`${focused ? 'text-black ' : 'text-gray-400 '} text-2xl`}
             />
           )

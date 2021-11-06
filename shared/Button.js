@@ -1,11 +1,12 @@
 import React from 'react'
 import { Text, View, StyleSheet, Pressable } from 'react-native'
+import tw from '../lib/tailwind'
 
 export default function Button(props) {
-  const { onPress, title = 'Shop' } = props
+  const { onPress, title = 'Shop', transform='capitalize' } = props
   return (
     <Pressable style={styles.button} onPress={onPress}>
-      <Text style={styles.text}>{title}</Text>
+      <Text style={[tw`${transform} `,styles.text]}>{title}</Text>
     </Pressable>
   )
 }
@@ -15,7 +16,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     paddingVertical: 12,
-    paddingHorizontal: 32,
+    paddingHorizontal: 25,
     borderRadius: 1,
     elevation: 3,
     backgroundColor: 'black'
@@ -27,6 +28,5 @@ const styles = StyleSheet.create({
     letterSpacing: 0.25,
     color: 'white',
     fontFamily: 'poppins',
-    textTransform: 'uppercase'
   }
 })

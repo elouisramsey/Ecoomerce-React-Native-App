@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { Ionicons } from '@expo/vector-icons'
 import {
   StyleSheet,
@@ -8,9 +8,8 @@ import {
   SafeAreaView,
   Image,
   FlatList,
-  ImageBackground
+  ScrollView
 } from 'react-native'
-import { useEffect } from 'react/cjs/react.production.min'
 import tw from '../lib/tailwind'
 import Showbtn from '../shared/ShowBtn'
 import { useCartContext } from '../context/CartProvider'
@@ -410,9 +409,8 @@ export const Categories = ({ navigation }) => {
   const [products, setProducts] = React.useState(productsData)
   const [productLists, setProductLists] = React.useState(productsData)
   const [selectedCategory, setSelectedCategory] = React.useState(null)
-const [numberOfitems, updateNumberOfItems] = React.useState(1)
-const { addToCart } = useCartContext()
-
+  const [numberOfitems, updateNumberOfItems] = React.useState(1)
+  const { addToCart } = useCartContext()
 
   function onSelectCategory(category) {
     let productList = productLists.filter((product) =>
@@ -427,106 +425,117 @@ const { addToCart } = useCartContext()
     addToCart(product)
   }
 
-  const renderItem = ({ item }) => {
-    return (
-      <TouchableOpacity
-        style={[
-          tw`rounded-sm shadow-xl my-4 pb-4 flex h-64 flex-row bg-white mx-2`,
-          { flex: 1 / 2 }
-        ]}
-        onPress={() => {
-          navigation.navigate('Product', { item })
-        }}
-      >
-        <View>
-          <View style={tw`w-full h-3/5 flex items-center justify-center px-4`}>
-            <Image
-              source={item.image}
-              resizeMode='contain'
-              style={tw`max-w-full`}
-            />
-          </View>
-          <View style={tw`px-3 py-2`}>
-            <Text style={[tw`text-black font-bold text-base`, styles.name]}>
-              {item.name}
-            </Text>
-
-            <Text style={[tw`text-gray-400 text-xs py-3`]} numberOfLines={1}>
-              {item.description}
-            </Text>
-
-            <View style={tw`flex flex-row w-full items-center`}>
-              <Text style={[tw`text-lg font-bold text-base`, styles.price]}>
-                {'\u20A6'}
-                {item.price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
-              </Text>
-
-              <TouchableOpacity
-                style={tw`bg-black items-center justify-center h-6 w-6 rounded-full absolute right-0`}
-                onPress={() => {
-                  addProductToCart(item)
-                }}
-              >
-                <Ionicons name='add-outline' style={tw`text-white text-base`} />
-              </TouchableOpacity>
-            </View>
-          </View>
-        </View>
-      </TouchableOpacity>
-    )
-  }
-
-  const renderCategories = ({ item }) => {
-    return (
-      <TouchableOpacity
-        style={tw`pb-5 flex items-center justify-center mr-5`}
-        onPress={() => onSelectCategory(item)}
-      >
-        <Text
-          style={[
-            tw`text-base pb-3 ${
-              selectedCategory?.id === item.id
-                ? 'text-black border-b border-solid border-gray-600'
-                : 'text-gray-400'
-            }`,
-            styles.name
-          ]}
-        >
-          {item.name}
-        </Text>
-      </TouchableOpacity>
-    )
-  }
-
   return (
-    <View style={[tw`flex bg-white`]}>
-      <View style={[tw`px-4 mb-5 flex flex-row justify-between items-center`]}>
+    <View style={[tw`flex bg-white py-2`]}>
+      <View style={[tw`px-2 mb-5 flex flex-row justify-between items-center`]}>
         <Text style={[tw`text-black text-xl font-bold`, styles.headers]}>
           Categories
         </Text>
         <Showbtn />
       </View>
-      <FlatList
-        data={categories}
-        horizontal
+      <ScrollView
         showsHorizontalScrollIndicator={false}
-        keyExtractor={(item) => `${item.id}`}
-        renderItem={renderCategories}
-        contentContainerStyle={tw`px-4 `}
-      />
-      <FlatList
-        data={products}
-        keyExtractor={(item) => `${item.id}`}
-        renderItem={renderItem}
-        columnWrapperStyle={tw``}
-        contentContainerStyle={tw`flex`}
-        numColumns={2}
-        ListEmptyComponent={
+        showsVerticalScrollIndicator={false}
+        horizontal={true}
+        contentContainerStyle={tw`px-2`}
+      >
+        {categories.map((item, index) => {
+          return (
+            <TouchableOpacity
+              key={index}
+              style={tw`pb-5 flex items-center justify-center mr-5`}
+              onPress={() => onSelectCategory(item)}
+            >
+              <Text
+                style={[
+                  tw`text-base pb-3 ${
+                    selectedCategory?.id === item.id
+                      ? 'text-black border-b border-solid border-gray-600'
+                      : 'text-gray-400'
+                  }`,
+                  styles.name
+                ]}
+              >
+                {item.name}
+              </Text>
+            </TouchableOpacity>
+          )
+        })}
+      </ScrollView>
+      <ScrollView
+        showsHorizontalScrollIndicator={false}
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={tw`flex-row flex-wrap w-full`}
+      >
+        {products ? (
+          products.map((item) => {
+            return (
+              <TouchableOpacity
+                key={item.id}
+                style={[
+                  tw`rounded-sm shadow-xl my-4 pb-4 flex h-64 flex-row bg-white mx-2`, {width: '45%'}
+                ]}
+                onPress={() => {
+                  navigation.navigate('Product', { item })
+                }}
+              >
+                <View>
+                  <View
+                    style={tw`w-full h-3/5 flex items-center justify-center px-4`}
+                  >
+                    <Image
+                      source={item.image}
+                      resizeMode='contain'
+                      style={tw`max-w-full`}
+                    />
+                  </View>
+                  <View style={tw`px-3 py-2`}>
+                    <Text
+                      style={[tw`text-black font-bold text-base`, styles.name]}
+                    >
+                      {item.name}
+                    </Text>
+
+                    <Text
+                      style={[tw`text-gray-400 text-xs py-3`]}
+                      numberOfLines={1}
+                    >
+                      {item.description}
+                    </Text>
+
+                    <View style={tw`flex flex-row w-full items-center`}>
+                      <Text
+                        style={[tw`text-lg font-bold text-base`, styles.price]}
+                      >
+                        {'\u20A6'}
+                        {item.price
+                          .toString()
+                          .replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+                      </Text>
+
+                      <TouchableOpacity
+                        style={tw`bg-black items-center justify-center h-6 w-6 rounded-full absolute right-0`}
+                        onPress={() => {
+                          addProductToCart(item)
+                        }}
+                      >
+                        <Ionicons
+                          name='add-outline'
+                          style={tw`text-white text-base`}
+                        />
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+                </View>
+              </TouchableOpacity>
+            )
+          })
+        ) : (
           <Text style={[tw`text-center py-2`, styles.price]}>
             Nothing to display at the moment
           </Text>
-        }
-      />
+        )}
+      </ScrollView>
     </View>
   )
 }

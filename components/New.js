@@ -4,10 +4,8 @@ import {
   Text,
   View,
   TouchableOpacity,
-  SafeAreaView,
   Image,
-  FlatList,
-  ImageBackground
+  ScrollView
 } from 'react-native'
 import tw from '../lib/tailwind'
 import Showbtn from '../shared/ShowBtn'
@@ -387,36 +385,6 @@ const products = [
 ]
 
 export default NewProducts = ({navigation}) => {
-  const renderItem = ({ item }) => {
-    return (
-      <TouchableOpacity
-        style={tw`h-52 mr-5 bg-white`}
-        onPress={() => {
-          navigation.navigate('Product', { item })
-        }}
-      >
-        <View
-          style={tw`w-32 h-32 flex items-center rounded justify-center bg-light px-4`}
-        >
-          <Image
-            source={item.image}
-            resizeMode='contain'
-            style={tw`max-w-full flex`}
-          />
-        </View>
-        <View style={tw``}>
-          <Text style={[tw`text-black font-bold text-base`, styles.name]}>
-            {item.name}
-          </Text>
-
-          <Text style={[tw`text-sm font-light text-gray-500`, styles.price]}>
-            {'\u20A6'}
-            {item.price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
-          </Text>
-        </View>
-      </TouchableOpacity>
-    )
-  }
   return (
     <View style={[tw`py-5 px-4 flex`]}>
       <View style={[tw`mb-5 flex flex-row justify-between items-center`]}>
@@ -425,14 +393,41 @@ export default NewProducts = ({navigation}) => {
         </Text>
         <Showbtn />
       </View>
-      <FlatList
-        data={products}
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        keyExtractor={(item) => `${item.id}`}
-        renderItem={renderItem}
-        contentContainerStyle={tw``}
-      />
+      <ScrollView horizontal={true} showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false}>
+        {products.map(item => {
+          return (
+            <TouchableOpacity
+            key={item.id}
+              style={tw`h-52 mr-5 bg-white`}
+              onPress={() => {
+                navigation.navigate('Product', { item })
+              }}
+            >
+              <View
+                style={tw`w-32 h-32 flex items-center rounded justify-center bg-light px-4`}
+              >
+                <Image
+                  source={item.image}
+                  resizeMode='contain'
+                  style={tw`max-w-full flex`}
+                />
+              </View>
+              <View style={tw`px-2 py-1`}>
+                <Text style={[tw`text-black font-bold text-base`, styles.name]}>
+                  {item.name}
+                </Text>
+
+                <Text
+                  style={[tw`text-sm font-light text-gray-500`, styles.price]}
+                >
+                  {'\u20A6'}
+                  {item.price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+                </Text>
+              </View>
+            </TouchableOpacity>
+          )
+        })}
+      </ScrollView>
     </View>
   )
 }

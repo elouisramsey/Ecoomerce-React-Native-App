@@ -8,7 +8,7 @@ import {
   SafeAreaView,
   Image,
   FlatList,
-  ImageBackground
+  ScrollView
 } from 'react-native'
 import tw from '../lib/tailwind'
 
@@ -404,7 +404,7 @@ const Bestseller = ({ navigation }) => {
           />
         </View>
         <View
-          style={tw`ml-4 w-full flex justify-center border-b border-solid border-gray-300`}
+          style={tw`ml-4 w-full flex justify-center`}
         >
           <Text style={[tw`text-black font-bold text-xl`, styles.name]}>
             {item.name}
@@ -428,11 +428,44 @@ const Bestseller = ({ navigation }) => {
         </Text>
         <Showbtn />
       </View>
-      <FlatList
-        data={products}
-        keyExtractor={(item) => `${item.id}`}
-        renderItem={renderItem}
-      />
+      <ScrollView showsHorizontalScrollIndicator={false} showsVerticalScrollIndicator={false}>
+        {products.map(item => {
+           return (
+             <TouchableOpacity
+             key={item.id}
+               style={tw`h-32 flex flex-row bg-white mb-5 w-full`}
+               onPress={() => {
+                 navigation.navigate('Product', { item })
+               }}
+             >
+               <View
+                 style={tw`w-32 h-32 flex items-center rounded justify-center bg-light px-4`}
+               >
+                 <Image
+                   source={item.image}
+                   resizeMode='contain'
+                   style={tw`max-w-full flex`}
+                 />
+               </View>
+               <View style={tw`ml-4 w-full flex justify-center`}>
+                 <Text style={[tw`text-black font-bold text-xl`, styles.name]}>
+                   {item.name}
+                 </Text>
+
+                 <Text
+                   style={[
+                     tw`text-base font-light text-gray-500 mt-3`,
+                     styles.price
+                   ]}
+                 >
+                   {'\u20A6'}
+                   {item.price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+                 </Text>
+               </View>
+             </TouchableOpacity>
+           )
+        })}
+      </ScrollView>
     </View>
   )
 }

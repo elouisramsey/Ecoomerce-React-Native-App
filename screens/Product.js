@@ -1,15 +1,13 @@
 import {
-  SafeAreaView,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
-  Platform,
   Image,
-  FlatList,
   ScrollView,
   Dimensions
 } from 'react-native'
+import { SafeAreaView } from 'react-native-safe-area-context'
 import React, { useEffect, useState } from 'react'
 import tw from '../lib/tailwind'
 import { TabView, SceneMap, TabBar } from 'react-native-tab-view'
@@ -21,15 +19,25 @@ import {
   EvilIcons
 } from '@expo/vector-icons'
 import Button from '../shared/Button'
+import { useFavoriteContext } from '../context/FavoriteProvider'
 
 const initialLayout = { width: Dimensions.get('window').width }
 
 const Product = ({ route, navigation }) => {
   const [product, setProduct] = useState(null)
+  const [selectedCategory, setSelectedCategory] = React.useState(null)
+  const [favorite, setFavorite] = useState()
+  const { addToFavorites, checkifItemIsInFavorites } = useFavoriteContext()
+  const [selectedTab, setSelectedTab] = React.useState('first')
 
   const FirstRoute = () => {
     return (
-      <View style={tw`px-2 py-5 h-full`}>
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        showsHorizontalScrollIndicator={false}
+        style={tw`px-2`}
+        contentContainerStyle={[{ flexGrow: 1 }, tw``]}
+      >
         {product ? (
           <>
             <Text style={[tw`text-base mb-3 text-black`, styles.paragraphs]}>
@@ -41,10 +49,27 @@ const Product = ({ route, navigation }) => {
               ]}
             >
               <Text style={[tw`text-lightGrey text-base`, styles.paragraphs]}>
-                Sku:
+                Name:
+              </Text>
+              <Text
+                style={[
+                  tw`text-black text-base w-2/3 capitalize`,
+                  styles.paragraphs
+                ]}
+              >
+                {product.name}
+              </Text>
+            </View>
+            <View
+              style={[
+                tw`flex flex-row items-center w-full justify-between mb-3`
+              ]}
+            >
+              <Text style={[tw`text-lightGrey text-base`, styles.paragraphs]}>
+                Quantity sold:
               </Text>
               <Text style={[tw`text-black text-base w-2/3`, styles.paragraphs]}>
-                {product.sku}
+                {product.sales}
               </Text>
             </View>
             <View
@@ -83,7 +108,8 @@ const Product = ({ route, navigation }) => {
                   styles.paragraphs
                 ]}
               >
-                {product.tags.join(', ')}
+                {product.type}
+                {/* {product.tags.join(', ')} */}
               </Text>
             </View>
             <View
@@ -91,13 +117,20 @@ const Product = ({ route, navigation }) => {
                 tw`flex flex-row items-center w-full justify-between mb-3`
               ]}
             >
-              <Text
-                style={[
-                  tw`text-lightGrey text-base capitalize`,
-                  styles.paragraphs
-                ]}
-              >
-                dimensions:
+              <Text style={[tw`text-lightGrey text-base`, styles.paragraphs]}>
+                In stock:
+              </Text>
+              <Text style={[tw`text-black text-base w-2/3`, styles.paragraphs]}>
+                {product.stock}
+              </Text>
+            </View>
+            <View
+              style={[
+                tw`flex flex-row items-center w-full justify-between mb-3`
+              ]}
+            >
+              <Text style={[tw`text-lightGrey text-base`, styles.paragraphs]}>
+                Color:
               </Text>
               <Text
                 style={[
@@ -105,7 +138,7 @@ const Product = ({ route, navigation }) => {
                   styles.paragraphs
                 ]}
               >
-                {product.dimensions}
+                {product.color}
               </Text>
             </View>
           </>
@@ -114,62 +147,62 @@ const Product = ({ route, navigation }) => {
             Loading product...
           </Text>
         )}
-      </View>
-    )
-  }
-  const renderItem = ({ item }) => {
-    return (
-      <View style={tw`flex border-b border-solid border-gray-200 py-3 w-full`}>
-        <View>
-          <Text
-            style={[
-              tw`text-black capitalize text-sm font-bold`,
-              styles.paragraphs
-            ]}
-          >
-            {item.name}
-          </Text>
-          <Text style={[tw`text-lightGrey text-xs`, styles.paragraphs]}>
-            2 hours ago
-          </Text>
-        </View>
-        <View style={tw`py-3`}>
-          <View style={tw`flex flex-row items-center`}>
-            <Text
-              style={[
-                tw`text-black capitalize text-sm mr-1 font-bold`,
-                styles.paragraphs
-              ]}
-            >
-              {item.star}
-            </Text>
-            <EvilIcons name='star' style={tw`text-lg text-gray-400 mr-2`} />
-          </View>
-          <Text style={[tw`text-black text-sm`, styles.paragraphs]}>
-            {item.review}
-          </Text>
-        </View>
-        <TouchableOpacity>
-          <Text
-            style={[tw`text-lightGrey text-xs capitalize`, styles.paragraphs]}
-          >
-            reply
-          </Text>
-        </TouchableOpacity>
-      </View>
+      </ScrollView>
     )
   }
   const SecondRoute = () => {
-    return (
-      <View style={tw`px-2 py-5`}>
-        <FlatList
-          data={product?.review}
-          renderItem={renderItem}
-          keyExtractor={(item) => item.name}
-        />
-      </View>
-    )
+    console.log(product)
+    // {
+    //   product?.reviews[0].flatMap((product) => {
+    //     return (
+    //       <View
+    //         style={tw`flex border-b border-solid border-gray-200 py-3 w-full`}
+    //       >
+    //         <View>
+    //           <Text
+    //             style={[
+    //               tw`text-black capitalize text-sm font-bold`,
+    //               styles.paragraphs
+    //             ]}
+    //           >
+    //             {product.name}
+    //           </Text>
+    //           <Text style={[tw`text-lightGrey text-xs`, styles.paragraphs]}>
+    //             2 hours ago
+    //           </Text>
+    //         </View>
+    //         <View style={tw`py-3`}>
+    //           <View style={tw`flex flex-row products-center`}>
+    //             <Text
+    //               style={[
+    //                 tw`text-black capitalize text-sm mr-1 font-bold`,
+    //                 styles.paragraphs
+    //               ]}
+    //             >
+    //               {product.star}
+    //             </Text>
+    //             <EvilIcons name='star' style={tw`text-lg text-gray-400 mr-2`} />
+    //           </View>
+    //           <Text style={[tw`text-black text-sm`, styles.paragraphs]}>
+    //             {product.review}
+    //           </Text>
+    //         </View>
+    //         <TouchableOpacity>
+    //           <Text
+    //             style={[
+    //               tw`text-lightGrey text-xs capitalize`,
+    //               styles.paragraphs
+    //             ]}
+    //           >
+    //             reply
+    //           </Text>
+    //         </TouchableOpacity>
+    //       </View>
+    //     )
+    //   })
+    // }
   }
+
   const ThirdRoute = () => {
     return (
       <View style={tw`px-2 py-5 h-full`}>
@@ -182,30 +215,11 @@ const Product = ({ route, navigation }) => {
     )
   }
 
-  const renderScene = SceneMap({
-    first: FirstRoute,
-    second: SecondRoute,
-    third: ThirdRoute
-  })
-
-  const [index, setIndex] = React.useState(0)
   const [routes] = React.useState([
     { key: 'first', title: 'description' },
     { key: 'second', title: 'review' },
     { key: 'third', title: 'additional information' }
   ])
-
-  const renderTabBar = (props) => (
-    <TabBar
-      {...props}
-      activeColor='black'
-      inactiveColor='#a5a5a5'
-      labelStyle={[tw`text-sm w-full capitalize`, styles.heading]}
-      tabStyle={tw`flex flex-row items-center`}
-      indicatorStyle={{ backgroundColor: 'black' }}
-      style={tw`bg-transparent w-full px-0`}
-    />
-  )
 
   useEffect(() => {
     let { item } = route.params
@@ -213,39 +227,35 @@ const Product = ({ route, navigation }) => {
   }, [])
 
   return (
-    <SafeAreaView style={styles.droidSafeArea}>
-      <View style={[tw`flex h-full`]}>
-        <View style={[tw`flex flex-row items-center justify-between p-4`]}>
-          <TouchableOpacity onPress={() => navigation.goBack()}>
-            <MaterialCommunityIcons
-              name='keyboard-backspace'
-              style={tw`text-2xl text-black font-bold`}
+    <SafeAreaView>
+      <View style={[tw`flex flex-row items-center justify-between px-2`]}>
+        <TouchableOpacity onPress={() => navigation.goBack()}>
+          <MaterialCommunityIcons
+            name='keyboard-backspace'
+            style={tw`text-2xl text-black font-bold`}
+          />
+        </TouchableOpacity>
+        <View style={tw`flex flex-row items-center`}>
+          <TouchableOpacity>
+            <Feather
+              name='shopping-bag'
+              style={tw`text-xl text-black font-bold`}
             />
           </TouchableOpacity>
-
-          {/* <Text
-            style={[
-              tw`font-bold text-2xl text-black capitalize`,
-              styles.product
-            ]}
-          >
-            {product?.name}
-          </Text> */}
-          <View style={tw`flex flex-row items-center`}>
-            <TouchableOpacity>
-              <Feather
-                name='shopping-bag'
-                style={tw`text-xl text-black font-bold`}
-              />
-            </TouchableOpacity>
-            <TouchableOpacity>
-              <AntDesign
-                name='hearto'
-                style={tw`text-xl text-black font-bold ml-2`}
-              />
-            </TouchableOpacity>
-          </View>
+          <TouchableOpacity>
+            <AntDesign
+              name='heart'
+              style={tw`text-xl font-bold ml-2 text-gray-300`}
+            />
+          </TouchableOpacity>
         </View>
+      </View>
+      <ScrollView
+        style={[tw``]}
+        contentContainerStyle={[{ flexGrow: 1 }, tw``]}
+        showsVerticalScrollIndicator={false}
+        showsHorizontalScrollIndicator={false}
+      >
         <View style={[tw`flex flex-row justify-between w-full py-2 px-4`]}>
           <View style={[tw`flex`]}>
             <Text
@@ -254,7 +264,9 @@ const Product = ({ route, navigation }) => {
                 styles.heading
               ]}
             >
-              {product?.name}
+              {product?.name <= 20
+                ? product?.name
+                : product?.name.slice(0, 20) + '...'}
             </Text>
             <View style={tw`flex flex-row`}>
               <EvilIcons name='star' style={tw`text-lg text-gray-400 mr-2`} />
@@ -270,15 +282,21 @@ const Product = ({ route, navigation }) => {
               styles.heading
             ]}
           >
-            {'\u20A6'}
-            {product?.price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+            {'\u20A6'}{' '}
+            {(product?.price * 415.16)
+              .toFixed(2)
+              .toString()
+              .replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
           </Text>
         </View>
         <View
-          style={tw`w-full h-40 flex items-center justify-center px-6 border-t border-solid border-gray-200 py-3 bg-light-200`}
+          style={[
+            tw`w-full flex items-center justify-center border-t border-solid border-gray-200 bg-white`,
+            { height: 300 }
+          ]}
         >
           <Image
-            source={product?.image}
+            source={{ uri: product?.image[0] }}
             resizeMode='contain'
             style={[
               tw`max-w-full`,
@@ -286,17 +304,48 @@ const Product = ({ route, navigation }) => {
             ]}
           />
         </View>
-        <TabView
-          renderTabBar={renderTabBar}
-          navigationState={{ index, routes }}
-          renderScene={renderScene}
-          onIndexChange={setIndex}
-          initialLayout={initialLayout}
-        />
-        <View style={tw`mb-4 px-2`}>
+        <ScrollView
+          showsHorizontalScrollIndicator={false}
+          showsVerticalScrollIndicator={false}
+          horizontal={true}
+          contentContainerStyle={tw`h-12`}
+        >
+          {routes.map((route) => {
+            return (
+              <TouchableOpacity
+                key={route.key}
+                style={tw`flex items-center justify-center px-2`}
+                onPress={() => setSelectedTab(route.key)}
+              >
+                <Text
+                  style={[
+                    tw`text-base ${
+                      selectedTab === route.key ? 'text-black' : 'text-gray-400'
+                    }`,
+                    styles.name
+                  ]}
+                >
+                  {route.title}
+                </Text>
+              </TouchableOpacity>
+            )
+          })}
+        </ScrollView>
+        <ScrollView
+          // style={[tw`h-full`]}
+          showsVerticalScrollIndicator={false}
+          showsHorizontalScrollIndicator={false}
+          // contentContainerStyle={tw`h-72`}
+        >
+          {selectedTab === 'first' && FirstRoute()}
+          {selectedTab === 'second' && SecondRoute()}
+          {selectedTab === 'third' && ThirdRoute()}
+        </ScrollView>
+
+        <View style={tw`my-8 px-2`}>
           <Button title='add to cart' />
         </View>
-      </View>
+      </ScrollView>
     </SafeAreaView>
   )
 }
@@ -310,8 +359,13 @@ const styles = StyleSheet.create({
   heading: {
     fontFamily: 'playfair'
   },
-  droidSafeArea: {
+  container: {
     flex: 1,
-    paddingTop: Platform.OS === 'android' ? 25 : 0
+    width: '100%'
+    // paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0
+  },
+  name: {
+    fontFamily: 'poppins',
+    textTransform: 'capitalize'
   }
 })
