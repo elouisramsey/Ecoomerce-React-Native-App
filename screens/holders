@@ -1,0 +1,25 @@
+const currentfavoriteStatus = !checker.favorite.includes(
+        '614b6311cb72aty9d1d2ddce55'
+      )
+      console.log(checker)
+      const addField = { favorite: arrayUnion('614b6311cb72aty9d1d2ddce55') }
+      const removeField = {
+        favorite: favorite.filter(
+          (item) => item !== '614b6311cb72aty9d1d2ddce55'
+        )
+      }
+      await updateDoc(checker, currentfavoriteStatus ? addField : removeField)
+
+      
+
+      this one adds correctly
+
+        useEffect(() => {
+    const gettings = async () => {
+      const checker = doc(db, 'users', currentDocumentID)
+      // console.log(checker);
+      const addField = { favorite: arrayUnion('614b6311cb72aty9d1d2dder') }
+      await updateDoc(checker, addField)
+    }
+    gettings()
+  }, [currentDocumentID])

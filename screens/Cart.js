@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import {
   StyleSheet,
   Text,
@@ -7,24 +7,65 @@ import {
   Platform,
   Image,
   ScrollView,
+  Pressable
 } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import tw from '../lib/tailwind'
-import { Feather } from '@expo/vector-icons'
+import { EvilIcons } from '@expo/vector-icons'
 import { useCartContext } from '../context/CartProvider'
 import Button from '../shared/Button'
 
+import { getAuth } from 'firebase/auth'
+import {
+  query,
+  collection,
+  onSnapshot,
+  where
+} from 'firebase/firestore'
+import { db } from '../firebase'
+
 const Cart = ({ navigation }) => {
-  const { numberOfItemsInCart, total, cart, emptyCart, removeFromCart } =
-    useCartContext()
+  const [cart, setCart] = useState([])
+  // const { numberOfItemsInCart, total, cart, emptyCart, removeFromCart } =
+  //   useCartContext()
+
+      const auth = getAuth()
+      const user = auth.currentUser
+  useEffect(() => {
+    if (user !== null) {
+      let uid = user.uid
+      const getters = async () => {
+        const fav = collection(db, 'users')
+        const q = query(fav, where('owner_uid', '==', uid))
+        onSnapshot(q, (querySnapshot) => {
+          querySnapshot.forEach((doc) => {
+         const { cart } = doc.data()
+         setCart(cart)
+          })
+        })
+      }
+      getters()
+    }
+  }, [])
 
   return (
-    <SafeAreaView style={styles.droidSafeArea}>
-      <View style={tw`bg-transparent h-full`}>
-        <View style={[tw`p-2`]}>
-          <View style={tw`flex flex-row justify-between items-center`}>
-            <TouchableOpacity onPress={() => navigation.goBack()}>
-              <Feather name='x' style={tw`text-2xl text-black font-bold`} />
+    <SafeAreaView style={[tw`bg-gray-100`, { flex: 1 }]}>
+      <ScrollView
+        showsHorizontalScrollIndicator={false}
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={tw`h-full`}
+      >
+        <View style={[tw`px-3`]}>
+          <View style={tw`flex flex-row justify-between items-center h-12`}>
+            <TouchableOpacity
+              // onPress={navigation.goBack()}
+              style={[
+                tw`w-6 h-6 bg-red-500 rounded-full items-center justify-center`
+              ]}
+            >
+              <Text style={[tw`text-sm text-gray-200`, styles.paragraphs]}>
+                X
+              </Text>
             </TouchableOpacity>
             <TouchableOpacity onPress={() => navigation.goBack()}>
               <Text
@@ -38,175 +79,216 @@ const Cart = ({ navigation }) => {
             </TouchableOpacity>
           </View>
           <Text
-            style={[tw`text-black font-bold text-3xl my-3`, styles.heading]}
+            style={[tw`text-black font-bold text-3xl mt-2`, styles.heading]}
           >
             Shopping cart
           </Text>
         </View>
 
-        {cart.length ? (
-          <View style={{ flex: 1 }}>
-            <ScrollView
-              showsVerticalScrollIndicator={false}
-              showsHorizontalScrollIndicator={false}
-            >
-              <View
-                style={[
-                  tw`border-t border-b border-solid border-gray-200 py-3 `
-                ]}
-              >
-                <Text
+        <View style={[{ flex: 1 }, tw`h-full`]}>
+          <ScrollView
+            showsVerticalScrollIndicator={false}
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={tw`h-full`}
+          >
+            {cart.length ? (
+              <>
+                <View
                   style={[
-                    tw`text-black text-xl font-medium my-2 px-2`,
-                    styles.paragraphs
+                    tw`border-t border-b border-solid border-gray-200 py-3 `
                   ]}
                 >
-                  {numberOfItemsInCart}{' '}
-                  {numberOfItemsInCart > 1 ? 'products' : 'product'} in cart
-                </Text>
-                <View style={[tw`h-full`]}>
-                  {cart.map((item) => (
-                    <View style={tw`flex-row h-20 mb-6`} key={item.id}>
-                      <View
-                        style={tw`w-2/5 items-center justify-center px-4 bg-light`}
-                      >
-                        <Image
-                          source={item.image}
-                          style={{
-                            width: '100%',
-                            height: undefined,
-                            aspectRatio: 1
-                          }}
-                          resizeMode='contain'
-                        />
-                      </View>
-                      <View
-                        style={tw`border-b border-solid border-gray-200 w-3/5 px-4`}
-                      >
+                  <Text
+                    style={[
+                      tw`text-black text-xl font-medium my-2 px-2`,
+                      styles.paragraphs
+                    ]}
+                  >
+                    {cart.length}{' '}
+                    {cart.length > 1 ? 'products' : 'product'} in cart
+                  </Text>
+                  <View style={[tw`h-full my-4`]}>
+                    {cart.map((item) => (
+                      <View style={tw`flex-row h-20 mb-6`} key={item.id}>
                         <View
-                          style={[tw`flex-row items-center justify-between`]}
+                          style={tw`w-2/5 items-center justify-center px-4 bg-light overflow-hidden h-full`}
                         >
-                          <Text
-                            style={[
-                              tw`text-black font-bold capitalize text-base`,
-                              styles.heading
-                            ]}
-                          >
-                            {item.name}
-                          </Text>
-                          <TouchableOpacity
-                            onPress={() => removeFromCart(item)}
-                            style={[
-                              tw`h-4 w-4 rounded-full items-center justify-center bg-red-500`
-                            ]}
+                          <Image
+                            source={{uri: item.image}}
+                            style={{
+                              width: '100%',
+                              height: undefined,
+                              aspectRatio: 1
+                            }}
+                            resizeMode='contain'
+                          />
+                        </View>
+                        <View
+                          style={tw`border-b border-solid border-gray-200 w-3/5 px-4`}
+                        >
+                          <View
+                            style={[tw`flex-row items-center justify-between`]}
                           >
                             <Text
                               style={[
-                                tw`text-xs text-gray-100`,
-                                styles.paragraphs
+                                tw`text-black font-bold capitalize text-base`,
+                                styles.heading
                               ]}
                             >
-                              X
+                              {item.name}
                             </Text>
-                          </TouchableOpacity>
-                        </View>
-                        <Text
-                          style={[
-                            tw`text-gray-400 text-sm mb-1`,
-                            styles.paragraphs
-                          ]}
-                        >
-                          {'\u20A6'}
-                          {item.price
-                            .toString()
-                            .replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
-                        </Text>
-                        <View style={tw`flex flex-row items-center`}>
-                          <View style={tw`h-3 w-3 rounded-full bg-black`} />
+                            <TouchableOpacity
+                              onPress={() => removeFromCart(item)}
+                              style={[
+                                tw`h-4 w-4 rounded-full items-center justify-center bg-red-500`
+                              ]}
+                            >
+                              <Text
+                                style={[
+                                  tw`text-xs text-gray-100`,
+                                  styles.paragraphs
+                                ]}
+                              >
+                                X
+                              </Text>
+                            </TouchableOpacity>
+                          </View>
                           <Text
                             style={[
-                              tw`text-gray-400 text-sm capitalize mx-1`,
+                              tw`text-gray-400 text-sm mb-1`,
                               styles.paragraphs
                             ]}
                           >
-                            black
+                            {'\u20A6'}
+                            {item.price
+                              .toString()
+                              .replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
                           </Text>
+                          {/* <View style={tw`flex flex-row items-center`}>
+                            <View style={[tw`h-3 w-3 rounded-full bg-black`]} />
+                            <Text
+                              style={[
+                                tw`text-gray-400 text-sm capitalize mx-1`,
+                                styles.paragraphs
+                              ]}
+                            >
+                              {item.color}
+                            </Text>
+                          </View> */}
                         </View>
                       </View>
+                    ))}
+                  </View>
+                </View>
+                <View style={tw`border-t border-solid border-gray-300`}>
+                  <View style={tw`px-2 py-5`}>
+                    <View style={tw`flex flex-row justify-between w-full mb-1`}>
+                      <Text
+                        style={[
+                          tw`text-gray-500 text-base w-2/5`,
+                          styles.paragraphs
+                        ]}
+                      >
+                        Shipping fee
+                      </Text>
+                      <Text
+                        style={[
+                          tw`text-gray-500 text-base w-2/5  text-right`,
+                          styles.paragraphs
+                        ]}
+                      >
+                        {'\u20A6'}
+                        {(50000)
+                          .toString()
+                          .replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+                      </Text>
                     </View>
-                  ))}
+                    <View style={tw`flex flex-row justify-between w-full mb-1`}>
+                      <Text
+                        style={[
+                          tw`text-gray-500 text-base w-2/5`,
+                          styles.paragraphs
+                        ]}
+                      >
+                        Sub total
+                      </Text>
+                      <Text
+                        style={[
+                          tw`text-gray-500 text-base w-2/5 text-right`,
+                          styles.paragraphs
+                        ]}
+                      >
+                        {'\u20A6'}
+                        5000
+                      </Text>
+                    </View>
+                    <View style={tw`flex flex-row justify-between w-full mb-1`}>
+                      <Text
+                        style={[
+                          tw`text-black font-bold text-base w-2/5`,
+                          styles.paragraphs
+                        ]}
+                      >
+                        Total
+                      </Text>
+                      <Text
+                        style={[
+                          tw`text-black font-bold text-base w-2/5 text-right`,
+                          styles.paragraphs
+                        ]}
+                      >
+                        {'\u20A6'}
+                        {(450000)
+                          .toString()
+                          .replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+                      </Text>
+                    </View>
+                  </View>
+                  <View style={tw`mb-4 px-2`}>
+                    <Button title='checkout' />
+                  </View>
                 </View>
+              </>
+            ) : (
+              <View
+                style={tw`justify-center items-center h-full`}
+              >
+                <View
+                  style={tw`justify-center items-center h-36 w-36 rounded-full bg-gray-300 mb-6`}
+                >
+                  <EvilIcons
+                    name='cart'
+                    style={[tw`text-black font-bold`, { fontSize: 80 }]}
+                  />
+                </View>
+                <Text style={[tw`text-gray-600 text-base`, styles.paragraphs]}>
+                  Unfortunately, your cart is Empty
+                </Text>
+                <Text
+                  style={[tw`text-gray-400 text-sm mb-6 mt-2`, styles.paragraphs]}
+                >
+                  Please add some products to your cart
+                </Text>
+                <Pressable
+                  onPress={() =>
+                    navigation.navigate('Home')
+                  }
+                  style={tw`justify-center items-center py-2 px-7 border rounded-sm shadow-sm bg-black`}
+                >
+                  <Text
+                    style={[
+                      tw`text-sm font-bold capitalize tracking-wide text-white`,
+                      styles.paragraphs
+                    ]}
+                  >
+                   continue shopping
+                  </Text>
+                </Pressable>
               </View>
-            </ScrollView>
-            <View style={tw`border-t border-solid border-gray-300`}>
-              <View style={tw`px-2 py-5`}>
-                <View style={tw`flex flex-row justify-between w-full mb-1`}>
-                  <Text
-                    style={[
-                      tw`text-gray-500 text-base w-2/5`,
-                      styles.paragraphs
-                    ]}
-                  >
-                    Shipping fee
-                  </Text>
-                  <Text
-                    style={[
-                      tw`text-gray-500 text-base w-2/5  text-right`,
-                      styles.paragraphs
-                    ]}
-                  >
-                    {'\u20A6'}
-                    {(50000).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
-                  </Text>
-                </View>
-                <View style={tw`flex flex-row justify-between w-full mb-1`}>
-                  <Text
-                    style={[
-                      tw`text-gray-500 text-base w-2/5`,
-                      styles.paragraphs
-                    ]}
-                  >
-                    Sub total
-                  </Text>
-                  <Text
-                    style={[
-                      tw`text-gray-500 text-base w-2/5 text-right`,
-                      styles.paragraphs
-                    ]}
-                  >
-                    {'\u20A6'}
-                    {total.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
-                  </Text>
-                </View>
-                <View style={tw`flex flex-row justify-between w-full mb-1`}>
-                  <Text
-                    style={[
-                      tw`text-black font-bold text-base w-2/5`,
-                      styles.paragraphs
-                    ]}
-                  >
-                    Total
-                  </Text>
-                  <Text
-                    style={[
-                      tw`text-black font-bold text-base w-2/5 text-right`,
-                      styles.paragraphs
-                    ]}
-                  >
-                    {'\u20A6'}
-                    {(450000).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
-                  </Text>
-                </View>
-              </View>
-              <View style={tw`mb-4 px-2`}>
-                <Button title='checkout' />
-              </View>
-            </View>
-          </View>
-        ) : (
-          <Text>Nothing yet</Text>
-        )}
-      </View>
+            )}
+          </ScrollView>
+        </View>
+      </ScrollView>
     </SafeAreaView>
   )
 }

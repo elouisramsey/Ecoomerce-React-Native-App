@@ -12,9 +12,11 @@ import {
 import tw from '../lib/tailwind'
 
 import Home from '../screens/Home'
-import Login from '../screens/Login'
 import Cart from '../screens/Cart'
-import Signup from '../screens/SignUp'
+import Profile from '../screens/Profile'
+import Favorites from '../screens/Favorites'
+import { View, Text } from 'react-native'
+import Notification from '../screens/Notification'
 
 const Tab = createBottomTabNavigator()
 
@@ -51,8 +53,8 @@ const Tabs = () => {
         }}
       />
       <Tab.Screen
-        name='Bookmarks'
-        component={Signup}
+        name='Favorites'
+        component={Favorites}
         options={{
           tabBarIcon: ({ focused }) => (
             <Fontisto
@@ -67,16 +69,25 @@ const Tabs = () => {
         component={Cart}
         options={{
           tabBarIcon: ({ focused }) => (
-            <Feather
-              name='shopping-bag'
-              style={tw`${focused ? 'text-black ' : 'text-gray-400 '} text-2xl`}
-            />
+            <View style={tw`relative`}>
+              <View
+                style={tw`absolute h-4 w-4 rounded-full justify-center items-center bg-red-500 z-10 right-0`}
+              >
+                <Text style={tw`text-tiny text-white`}>0</Text>
+              </View>
+              <Feather
+                name='shopping-bag'
+                style={tw`${
+                  focused ? 'text-black ' : 'text-gray-400 '
+                } text-2xl`}
+              />
+            </View>
           )
         }}
       />
       <Tab.Screen
-        name='Notifications'
-        component={Home}
+        name='Notification'
+        component={Notification}
         options={{
           tabBarIcon: ({ focused }) => (
             <SimpleLineIcons
@@ -90,7 +101,7 @@ const Tabs = () => {
       />
       <Tab.Screen
         name='Profile'
-        component={Home}
+        component={Profile}
         options={{
           tabBarIcon: ({ focused }) => (
             <Ionicons

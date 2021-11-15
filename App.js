@@ -1,12 +1,14 @@
+import 'react-native-gesture-handler'
 import React, { useState } from 'react'
 import * as Font from 'expo-font'
 import AppLoading from 'expo-app-loading'
-import Appnavigator from './components/AppNavigator'
 import { CartProvider } from './context/CartProvider'
 import { FavoriteProvider } from './context/FavoriteProvider'
 import { QueryClient, QueryClientProvider } from 'react-query'
 import { SafeAreaProvider } from 'react-native-safe-area-context'
 import { SearchProvider } from './context/SearchProvider'
+import AuthNavigation from './navigation/AuthNavigation'
+import { AuthProvider } from './context/AuthProvider'
 
 const getFont = () =>
   Font.loadAsync({
@@ -22,15 +24,17 @@ export default function App() {
   if (fontsLoaded) {
     return (
       <SafeAreaProvider>
-        <QueryClientProvider client={queryClient}>
-          <CartProvider>
-            <FavoriteProvider>
-              <SearchProvider>
-                <Appnavigator />
-              </SearchProvider>
-            </FavoriteProvider>
-          </CartProvider>
-        </QueryClientProvider>
+        <AuthProvider>
+          <QueryClientProvider client={queryClient}>
+            <CartProvider>
+              <FavoriteProvider>
+                <SearchProvider>
+                  <AuthNavigation />
+                </SearchProvider>
+              </FavoriteProvider>
+            </CartProvider>
+          </QueryClientProvider>
+        </AuthProvider>
       </SafeAreaProvider>
     )
   } else {

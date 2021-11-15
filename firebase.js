@@ -1,7 +1,23 @@
-import firebase from 'firebase/compat/app'
 import { initializeApp } from 'firebase/app'
-import 'firebase/compat/auth'
+import {
+  collection,
+  addDoc,
+  doc,
+  setDoc,
+  getDoc,
+  getFirestore,
+  where,
+  query,
+  getDocs
+} from 'firebase/firestore'
+import 'firebase/auth'
 import 'firebase/compat/firestore'
+import {
+  getAuth,
+  createUserWithEmailAndPassword,
+  onAuthStateChanged,
+  updateProfile
+} from 'firebase/auth'
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
@@ -14,9 +30,21 @@ const firebaseConfig = {
 }
 
 // Initialize Firebase
-!firebase.apps.length ? initializeApp(firebaseConfig) : firebase.app()
+const firebaseApp = initializeApp(firebaseConfig)
 
-const db = firebase.firestore()
-const auth = firebase.auth()
+const db = getFirestore(firebaseApp)
+const auth = getAuth(firebaseApp)
 
-export default { firebase, db, auth }
+export {
+  db,
+  auth,
+  createUserWithEmailAndPassword,
+  collection,
+  addDoc,
+  onAuthStateChanged,
+  doc,
+  setDoc,
+  where,
+  updateProfile,
+  query
+}

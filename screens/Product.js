@@ -13,6 +13,15 @@ import tw from '../lib/tailwind'
 import { TabView, SceneMap, TabBar } from 'react-native-tab-view'
 
 import {
+  getDoc,
+  updateDoc,
+  arrayUnion,
+  arrayRemove,
+  doc
+} from 'firebase/firestore'
+import { db } from '../firebase'
+
+import {
   MaterialCommunityIcons,
   AntDesign,
   Feather,
@@ -20,8 +29,8 @@ import {
 } from '@expo/vector-icons'
 import Button from '../shared/Button'
 import { useFavoriteContext } from '../context/FavoriteProvider'
-
-const initialLayout = { width: Dimensions.get('window').width }
+import { useAuthContext } from '../context/AuthProvider'
+import { useCartContext } from '../context/CartProvider'
 
 const Product = ({ route, navigation }) => {
   const [product, setProduct] = useState(null)
@@ -29,6 +38,9 @@ const Product = ({ route, navigation }) => {
   const [favorite, setFavorite] = useState()
   const { addToFavorites, checkifItemIsInFavorites } = useFavoriteContext()
   const [selectedTab, setSelectedTab] = React.useState('first')
+
+  const { addToCart } = useCartContext()
+  const { currentDocumentID } = useAuthContext()
 
   const FirstRoute = () => {
     return (
@@ -226,9 +238,29 @@ const Product = ({ route, navigation }) => {
     setProduct(item)
   }, [])
 
+  // check if product is in favorites
+  const handleLike = async (id) => {
+    const checker = doc(db, 'users', currentDocumentID)
+    const checkerSnapshot = await getDoc(checker)
+
+    const addField = {
+      favorite: checkerSnapshot.data().favorite.includes(id)
+        ? arrayRemove(id)
+        : arrayUnion(id)
+    }
+    await updateDoc(checker, addField)
+  }
+
+  const numberOfitems = 1
+
+  function addProductToCart(product) {
+    product['quantity'] = numberOfitems
+    addToCart(product)
+  }
+
   return (
     <SafeAreaView>
-      <View style={[tw`flex flex-row items-center justify-between px-2`]}>
+      <View style={[tw`flex flex-row items-center justify-between px-2 h-12`]}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <MaterialCommunityIcons
             name='keyboard-backspace'
@@ -242,7 +274,7 @@ const Product = ({ route, navigation }) => {
               style={tw`text-xl text-black font-bold`}
             />
           </TouchableOpacity>
-          <TouchableOpacity>
+          <TouchableOpacity onPress={() => handleLike(product._id)}>
             <AntDesign
               name='heart'
               style={tw`text-xl font-bold ml-2 text-gray-300`}
@@ -251,7 +283,7 @@ const Product = ({ route, navigation }) => {
         </View>
       </View>
       <ScrollView
-        style={[tw``]}
+        style={[tw`mb-4`]}
         contentContainerStyle={[{ flexGrow: 1 }, tw``]}
         showsVerticalScrollIndicator={false}
         showsHorizontalScrollIndicator={false}
@@ -343,7 +375,10 @@ const Product = ({ route, navigation }) => {
         </ScrollView>
 
         <View style={tw`my-8 px-2`}>
-          <Button title='add to cart' />
+          <Button
+            title='add to cart'
+            onPress={() => addProductToCart(product)}
+          />
         </View>
       </ScrollView>
     </SafeAreaView>
