@@ -8,7 +8,7 @@ import {
   FlatList,
   ScrollView,
   LogBox,
-  Button,
+  ActivityIndicator,
   Dimensions
 } from 'react-native'
 import tw from '../lib/tailwind'
@@ -62,16 +62,11 @@ export default function InfiniteProducts({ navigation }) {
     console.log('i don reach ooo')
   }
 
-  if (isLoading) {
+  if (isLoading || isFetching) {
     return (
-      <Text
-        style={[
-          tw`text-black text-xl font-bold text-center`,
-          { fontFamily: 'poppins' }
-        ]}
-      >
-        Loading products
-      </Text>
+      <View styles={tw`items-center justify-center my-8`}>
+        <ActivityIndicator size='small' color='#000' />
+      </View>
     )
   }
 

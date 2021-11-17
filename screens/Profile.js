@@ -7,7 +7,7 @@ import {
   StyleSheet,
   Image,
   TouchableOpacity,
-  TouchableWithoutFeedback,
+  ActivityIndicator,
   Pressable,
   Alert
 } from 'react-native'
@@ -27,9 +27,6 @@ import {
   where
 } from 'firebase/firestore'
 import { db } from '../firebase'
-import Login from './Login'
-import Skeleton from '../components/Loader/Skeleton'
-import { useAuthContext } from '../context/AuthProvider'
 
 export default function Profile({ navigation }) {
   const [name, setName] = useState('')
@@ -44,8 +41,6 @@ export default function Profile({ navigation }) {
   const [address, setAddress] = useState('')
   const [loggedIn, setLoggedIn] = useState(false)
   const [loading, setLoading] = useState(true)
-
-  const { logout, user } = useAuthContext
 
   const auth = getAuth()
   const currentUser = auth.currentUser
@@ -88,160 +83,174 @@ export default function Profile({ navigation }) {
           })
         })
       }
-      getters()
+      getters().then(() => setLoading(false))
+    } else {
+      navigation.navigate('Login')
     }
-    navigation.navigate('Login')
   }, [])
 
   const signout = async () => {
-    logout().then(() => navigation.navigate('Home'))
+    signOut(auth)
+      .then(() => navigation.navigate('Home'))
+      .catch(() => {
+        Alert.alert('There was an error during signout')
+      })
   }
+
+  if (currentUser === undefined && currentUser === null && !loading) {
+    return (
+      <SafeAreaView
+        style={[tw`bg-gray-100 items-center justify-center`, { flex: 1 }]}
+      >
+        <ActivityIndicator size='small' color='#000' />
+      </SafeAreaView>
+    )
+  }
+
   return (
     <SafeAreaView style={[tw`bg-gray-100`, { flex: 1 }]}>
-      {currentUser !== null && (
-        <ScrollView
-          showsHorizontalScrollIndicator={false}
-          showsVerticalScrollIndicator={false}
-          contentContainerStyle={tw``}
-        >
-          <View style={tw`flex flex-row items-center h-12`}>
-            <EvilIcons
-              name='chevron-left'
-              style={[tw`text-black font-bold`, { fontSize: 40 }]}
-            />
-            <Text style={[tw`text-2xl text-black font-bold`, styles.heading]}>
-              Profile
-            </Text>
-          </View>
-          <View style={tw`border-t border-b border-gray-300 pt-6`}>
-            <View style={tw`flex flex-row px-2`}>
-              <View style={tw`w-1/3`}>
-                <View
-                  style={tw`flex justify-center h-28 w-28 rounded-full items-center overflow-hidden bg-gray-300`}
-                >
-                  {profileImage ? (
-                    <ImageBackground
-                      source={{ uri: profileImage }}
-                      style={tw`h-full w-full items-center justify-center`}
-                    />
-                  ) : (
-                    <EvilIcons
-                      name='image'
-                      style={[tw`text-black font-bold`, { fontSize: 40 }]}
-                    />
-                  )}
-                </View>
+      <ScrollView
+        showsHorizontalScrollIndicator={false}
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={tw``}
+      >
+        <View style={tw`flex flex-row items-center h-12`}>
+          <EvilIcons
+            name='chevron-left'
+            style={[tw`text-black font-bold`, { fontSize: 40 }]}
+          />
+          <Text style={[tw`text-2xl text-black font-bold`, styles.heading]}>
+            Profile
+          </Text>
+        </View>
+        <View style={tw`border-t border-b border-gray-300 pt-6`}>
+          <View style={tw`flex flex-row px-2`}>
+            <View style={tw`w-1/3`}>
+              <View
+                style={tw`flex justify-center h-28 w-28 rounded-full items-center overflow-hidden bg-gray-300`}
+              >
+                {profileImage ? (
+                  <ImageBackground
+                    source={{ uri: profileImage }}
+                    style={tw`h-full w-full items-center justify-center`}
+                  />
+                ) : (
+                  <EvilIcons
+                    name='image'
+                    style={[tw`text-black font-bold`, { fontSize: 40 }]}
+                  />
+                )}
               </View>
+            </View>
 
-              <View style={tw`justify-center ml-4`}>
+            <View style={tw`justify-center ml-4`}>
+              <Text
+                style={[
+                  tw`text-2xl text-black font-bold capitalize tracking-wide`,
+                  styles.paragraphs
+                ]}
+              >
+                {name}
+              </Text>
+              <Text style={[tw`text-gray-400 text-tiny`, styles.paragraphs]}>
+                @{userName}
+              </Text>
+              <Text style={[tw`text-gray-400 my-2`, styles.paragraphs]}>
+                Member since {date}
+              </Text>
+              <View style={tw``}>
+                <Pressable
+                  onPress={() =>
+                    navigation.navigate('EditProfile', {
+                      name: name,
+                      profileImage: profileImage,
+                      email: email,
+                      phone: phone,
+                      birthYear: birthYear,
+                      gender: gender,
+                      address: address
+                    })
+                  }
+                  style={tw`justify-center items-center py-2 px-7 border rounded-sm shadow-sm bg-black`}
+                >
+                  <Text
+                    style={[
+                      tw`text-sm font-bold capitalize tracking-wide text-white`,
+                      styles.paragraphs
+                    ]}
+                  >
+                    Edit account
+                  </Text>
+                </Pressable>
+                {/* <Button title='edit account' /> */}
+              </View>
+            </View>
+          </View>
+          <View style={tw`flex flex-row px-3 h-16 py-4 mt-6`}>
+            {profileTop?.map((item) => (
+              <TouchableOpacity
+                style={tw`w-1/3 flex-row items-center justify-center ${
+                  item.id === 2
+                    ? 'border-l border-r border-solid border-gray-400 '
+                    : ''
+                }`}
+                key={item.id}
+              >
+                <View style={tw`h-6 w-6`}>
+                  <Image
+                    source={item.image}
+                    resizeMode='cover'
+                    style={tw`h-full w-full`}
+                  />
+                </View>
                 <Text
                   style={[
-                    tw`text-2xl text-black font-bold capitalize tracking-wide`,
+                    tw`text-black text-base ml-1 capitalize font-medium`,
                     styles.paragraphs
                   ]}
                 >
-                  {name}
+                  {item.name}
                 </Text>
-                <Text style={[tw`text-gray-400 text-tiny`, styles.paragraphs]}>
-                  @{userName}
-                </Text>
-                <Text style={[tw`text-gray-400 my-2`, styles.paragraphs]}>
-                  Member since {date}
-                </Text>
-                <View style={tw``}>
-                  <Pressable
-                    onPress={() =>
-                      navigation.navigate('EditProfile', {
-                        name: name,
-                        profileImage: profileImage,
-                        email: email,
-                        phone: phone,
-                        birthYear: birthYear,
-                        gender: gender,
-                        address: address
-                      })
-                    }
-                    style={tw`justify-center items-center py-2 px-7 border rounded-sm shadow-sm bg-black`}
-                  >
-                    <Text
-                      style={[
-                        tw`text-sm font-bold capitalize tracking-wide text-white`,
-                        styles.paragraphs
-                      ]}
-                    >
-                      Edit account
-                    </Text>
-                  </Pressable>
-                  {/* <Button title='edit account' /> */}
-                </View>
-              </View>
-            </View>
-            <View style={tw`flex flex-row px-3 h-16 py-4 mt-6`}>
-              {profileTop?.map((item) => (
-                <TouchableOpacity
-                  style={tw`w-1/3 flex-row items-center justify-center ${
-                    item.id === 2
-                      ? 'border-l border-r border-solid border-gray-400 '
-                      : ''
-                  }`}
-                  key={item.id}
-                >
-                  <View style={tw`h-6 w-6`}>
-                    <Image
-                      source={item.image}
-                      resizeMode='cover'
-                      style={tw`h-full w-full`}
-                    />
-                  </View>
-                  <Text
-                    style={[
-                      tw`text-black text-base ml-1 capitalize font-medium`,
-                      styles.paragraphs
-                    ]}
-                  >
-                    {item.name}
-                  </Text>
-                </TouchableOpacity>
-              ))}
-            </View>
-          </View>
-          <View style={tw`px-3`}>
-            {profileBottom?.map((item) => (
-              <TouchableOpacity key={item.id}>
-                <View
-                  style={tw`flex-row px-3 border-b border-solid border-gray-300 py-4 justify-between items-center`}
-                >
-                  <Text
-                    style={[
-                      tw`text-black text-base font-medium capitalize`,
-                      styles.paragraphs
-                    ]}
-                  >
-                    {item.name}
-                  </Text>
-                  <AntDesign
-                    name='right'
-                    style={tw`text-lg text-gray-400 mr-2`}
-                  />
-                </View>
               </TouchableOpacity>
             ))}
           </View>
-          <Pressable
-            onPress={signout}
-            style={tw`justify-center items-center py-2 px-7 border rounded-sm shadow-sm bg-red-500 mx-3 my-4 border-red-500`}
+        </View>
+        <View style={tw`px-3`}>
+          {profileBottom?.map((item) => (
+            <TouchableOpacity key={item.id}>
+              <View
+                style={tw`flex-row px-3 border-b border-solid border-gray-300 py-4 justify-between items-center`}
+              >
+                <Text
+                  style={[
+                    tw`text-black text-base font-medium capitalize`,
+                    styles.paragraphs
+                  ]}
+                >
+                  {item.name}
+                </Text>
+                <AntDesign
+                  name='right'
+                  style={tw`text-lg text-gray-400 mr-2`}
+                />
+              </View>
+            </TouchableOpacity>
+          ))}
+        </View>
+        <Pressable
+          onPress={signout}
+          style={tw`justify-center items-center py-2 px-7 border rounded-sm shadow-sm bg-red-500 mx-3 my-4 border-red-500`}
+        >
+          <Text
+            style={[
+              tw`text-sm font-bold capitalize tracking-wide text-white`,
+              styles.paragraphs
+            ]}
           >
-            <Text
-              style={[
-                tw`text-sm font-bold capitalize tracking-wide text-white`,
-                styles.paragraphs
-              ]}
-            >
-              Logout
-            </Text>
-          </Pressable>
-        </ScrollView>
-      )}
+            Logout
+          </Text>
+        </Pressable>
+      </ScrollView>
     </SafeAreaView>
   )
 }

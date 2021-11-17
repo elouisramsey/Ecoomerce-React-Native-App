@@ -14,25 +14,29 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import tw from '../lib/tailwind'
 import Button from '../shared/Button'
 import Input from '../shared/Input'
-import { firebase } from '../firebase'
 
 import { useForm, Controller } from 'react-hook-form'
-import { useAuthContext } from '../context/AuthProvider'
+import { getAuth, signInWithEmailAndPassword } from 'firebase/auth'
+
 const EMAIL_REGEX =
   /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
 
 const Login = ({ navigation }) => {
-  console.log(navigation)
   const {
     handleSubmit,
     control,
     formState: { errors }
   } = useForm()
-  const { login } = useAuthContext
+
+  const auth = getAuth()
 
   const onSubmit = async (data) => {
     const { email, password } = data
-    login(email, password)
+    signInWithEmailAndPassword(auth, email, password)
+      .then(() => navigation.navigate('Home'))
+      .catch((error) => {
+        Alert.alert(error.message)
+      })
   }
 
   return (

@@ -52,8 +52,9 @@ export default function Search({ navigation }) {
           Search history
         </Text>
         <View style={tw`flex-wrap flex-row`}>
-          {searches?.map((search) => (
+          {searches?.map((search, index) => (
             <Text
+            key={index}
               onPress={(event) => {
                 setQuery(event._dispatchInstances.memoizedProps.children)
               }}

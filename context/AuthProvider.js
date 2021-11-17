@@ -1,9 +1,9 @@
 import React, { createContext, useContext, useEffect, useState } from 'react'
-import { getAuth, signOut } from 'firebase/auth'
+import { getAuth, signOut, createUserWithEmailAndPassword } from 'firebase/auth'
 // import { auth, onAuthStateChanged, getAuth } from '../firebase'
 import { firebase } from '../firebase'
 import { Alert } from 'react-native'
-  const auth = getAuth()
+  // const auth = getAuth()
 
 const AuthContext = createContext()
 

@@ -23,3 +23,156 @@ const currentfavoriteStatus = !checker.favorite.includes(
     }
     gettings()
   }, [currentDocumentID])
+
+
+
+  
+  function renderHeader() {
+    const handleError = (e) => {
+      console.log(e.nativeEvent.error)
+    }
+    return (
+      <View style={{ height: 500, width: '100%' }}>
+        <View
+          style={{
+            width: '100%',
+            height: '100%'
+          }}
+        >
+          <ImageBackground
+            onError={handleError}
+            imageStyle={{ opacity: 0.85 }}
+            source={require('../assets/images/beautiful-couch.jpg')}
+            style={[tw`px-4 py-6`, styles.image]}
+          >
+            <View
+              style={tw`flex justify-between items-center flex-row mb-5 mt-4`}
+            >
+              <TouchableOpacity>
+                <Ionicons
+                  name='menu-outline'
+                  style={tw`text-gray-200 text-3xl`}
+                />
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={tw`relative`}
+                onPress={() => {
+                  navigation.navigate('Cart')
+                }}
+              >
+                <Feather
+                  name='shopping-bag'
+                  style={tw`text-gray-200 text-2xl`}
+                />
+                <View
+                  style={tw`z-10 absolute -right-1 h-4 w-4 rounded-full flex items-center justify-center bg-white`}
+                >
+                  <Text
+                    style={[tw`text-tiny text-red-500 `, styles.paragraphs]}
+                  >
+                    {numberOfItemsInCart}
+                  </Text>
+                </View>
+              </TouchableOpacity>
+            </View>
+            <View style={tw`h-full w-full`}>
+              <View
+                style={tw`border-r border-solid border-black px-2 flex justify-end flex-row`}
+              >
+                <Text
+                  style={[
+                    tw`font-light capitalize text-base text-right`,
+                    styles.paragraphs
+                  ]}
+                >
+                  couch{'\n'}
+                  2021
+                </Text>
+              </View>
+              <View style={tw`flex`}>
+                <Text
+                  style={[
+                    tw`text-heroHead my-6 text-2xl font-bold`,
+                    styles.heading
+                  ]}
+                >
+                  Get furniture that gives comfort
+                </Text>
+                <Text style={[tw`text-base text-white`, styles.paragraphs]}>
+                  We offer high quality furniture for the best prices with
+                  access to doorstep delivery services
+                </Text>
+              </View>
+              <View style={tw`my-6 w-1/2`}>
+                <Button title='Shop now' />
+              </View>
+            </View>
+          </ImageBackground>
+        </View>
+      </View>
+    )
+  }
+
+
+  
+  const renderItem = ({ item }) => {
+    return (
+      <TouchableOpacity
+        style={tw`h-32 flex flex-row bg-white mb-5 w-full`}
+        onPress={() => {
+          navigation.navigate('Product', { item })
+        }}
+      >
+        <View
+          style={tw`w-32 h-32 flex items-center rounded justify-center bg-light px-4`}
+        >
+          <Image
+            source={item.image}
+            resizeMode='contain'
+            style={tw`max-w-full flex`}
+          />
+        </View>
+        <View
+          style={tw`ml-4 w-full flex justify-center`}
+        >
+          <Text style={[tw`text-black font-bold text-xl`, styles.name]}>
+            {item.name}
+          </Text>
+
+          <Text
+            style={[tw`text-base font-light text-gray-500 mt-3`, styles.price]}
+          >
+            {'\u20A6'}
+            {item.price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+          </Text>
+        </View>
+      </TouchableOpacity>
+    )
+  }
+
+
+  
+          <View style={tw`flex justify-end px-2 items-center flex-row`}>
+            <Animated.View
+              style={[
+                tw`flex-row w-4/5 items-center`,
+                {
+                  // Bind opacity to animated value
+                  opacity: fadeAnim
+                }
+              ]}
+            >
+              <Input
+                onFocus={() => navigation.navigate('Search')}
+                placeholder='Search for product'
+                style={tw`w-full`}
+              />
+            </Animated.View>
+
+            <TouchableOpacity
+              style={tw`h-11 items-center flex justify-center mt-5`}
+              onPress={fadeIn}
+            >
+              <EvilIcons name='search' style={tw`text-gray-200 text-3xl`} />
+            </TouchableOpacity>
+          </View>

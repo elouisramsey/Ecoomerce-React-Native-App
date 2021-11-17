@@ -35,35 +35,35 @@ export default function Signup({ navigation }) {
   } = useForm()
 
   const auth = getAuth()
-  const { register } = useAuthContext
+  // console.log(auth);
 
   const onSubmit = async (data) => {
     const { email, password, username, name } = data
     try {
-      const user = register(auth, email, password)
+      const user = await createUserWithEmailAndPassword(auth, email, password)
 
       await updateProfile(auth.currentUser, {
         displayName: name
       })
 
-      await addDoc(collection(db, 'users'), {
-        owner_uid: user.user.uid,
-        profileImage: user.user.photoURL,
-        username: username,
-        name: user.user.displayName,
-        email: email,
-        phone: '',
-        favorite: [],
-        cart: [],
-        wishlist: [],
-        created_at: new Date(),
-        address: '',
-        orders: [],
-        cards: [],
-        offers: [],
-        language: []
-      })
-      navigation.push('Home')
+       addDoc(collection(db, 'users'), {
+         owner_uid: user.user.uid,
+         profileImage: user.user.photoURL,
+         username: username,
+         name: user.user.displayName,
+         email: email,
+         phone: '',
+         favorite: [],
+         cart: [],
+         wishlist: [],
+         created_at: new Date(),
+         address: '',
+         orders: [],
+         cards: [],
+         offers: [],
+         language: []
+       }).then(() => navigation.navigate('Home'))
+
     } catch (error) {
       Alert.alert(
         'There was an error creating your account',

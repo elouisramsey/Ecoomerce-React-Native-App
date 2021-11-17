@@ -46,7 +46,7 @@ export default function EditProfile({ navigation, route }) {
       setFilePath(profileImage)
     }
 
-    (async () => {
+    ;(async () => {
       if (Platform.OS !== 'web') {
         const { status } =
           await ImagePicker.requestMediaLibraryPermissionsAsync()
@@ -77,7 +77,7 @@ export default function EditProfile({ navigation, route }) {
     const addField = {
       profileImage: filePath,
       name: data.fullName || name,
-      address: data.address|| address,
+      address: data.address || address,
       birthYear: data.birthYear || birthYear,
       gender: data.gender || gender,
       phone: data.phone || phone,
@@ -95,7 +95,7 @@ export default function EditProfile({ navigation, route }) {
         navigation.navigate('Profile')
       })
       .catch((error) => {
-       Alert.alert(error.message)
+        Alert.alert(error.message)
       })
   }
 
@@ -155,10 +155,10 @@ export default function EditProfile({ navigation, route }) {
                   </View>
                 </View>
               ) : (
-                    <EvilIcons
-                      name='image'
-                      style={[tw`text-black font-bold`, { fontSize: 40 }]}
-                    />
+                <EvilIcons
+                  name='image'
+                  style={[tw`text-black font-bold`, { fontSize: 40 }]}
+                />
               )}
             </TouchableOpacity>
           </View>
@@ -259,7 +259,8 @@ export default function EditProfile({ navigation, route }) {
                 maxLength: {
                   value: 4,
                   message: 'Birth year must be at most 4 characters'
-                }
+                },
+                // required: { value: true, message: 'DOB is required' }
               }}
               render={({ field: { onChange, value } }) => (
                 <Input
@@ -269,7 +270,7 @@ export default function EditProfile({ navigation, route }) {
                   error={errors.birthYear}
                   errorText={errors?.birthYear?.message}
                   onChangeText={(text) => onChange(allowOnlyNumber(text))}
-                  value={value}
+                  value={ birthYear || value }
                   placeholder={birthYear || 'Birth year'}
                 />
               )}
