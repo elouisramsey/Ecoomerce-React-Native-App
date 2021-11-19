@@ -46,7 +46,7 @@ export default function EditProfile({ navigation, route }) {
       setFilePath(profileImage)
     }
 
-    ;(async () => {
+    (async () => {
       if (Platform.OS !== 'web') {
         const { status } =
           await ImagePicker.requestMediaLibraryPermissionsAsync()

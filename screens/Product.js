@@ -31,13 +31,14 @@ import Button from '../shared/Button'
 import { useFavoriteContext } from '../context/FavoriteProvider'
 import { useAuthContext } from '../context/AuthProvider'
 import { useCartContext } from '../context/CartProvider'
+import { convertCurrency } from '../actions/CurrencyConverter'
+import Loading from '../components/Loader/Loading'
 
 const Product = ({ route, navigation }) => {
   const [product, setProduct] = useState(null)
-  const [selectedCategory, setSelectedCategory] = React.useState(null)
-  const [favorite, setFavorite] = useState()
-  const { addToFavorites, checkifItemIsInFavorites } = useFavoriteContext()
   const [selectedTab, setSelectedTab] = React.useState('first')
+  const [liked, setLiked] = useState(false)
+  const [loading, setLoading] = useState(true)
 
   const { addToCart } = useCartContext()
   const { currentDocumentID } = useAuthContext()
@@ -238,11 +239,20 @@ const Product = ({ route, navigation }) => {
     setProduct(item)
   }, [])
 
+  const checkLikeStatus = async () => {
+    const checker = doc(db, 'users', currentDocumentID)
+    const checkerSnapshot = await getDoc(checker)
+    setLiked(await checkerSnapshot.data().favorite.includes(product?._id))
+  }
+  checkLikeStatus().then(() => {
+    setLoading(false)
+  })
+
   // check if product is in favorites
   const handleLike = async (id) => {
     const checker = doc(db, 'users', currentDocumentID)
     const checkerSnapshot = await getDoc(checker)
-
+    setLiked(!liked)
     const addField = {
       favorite: checkerSnapshot.data().favorite.includes(id)
         ? arrayRemove(id)
@@ -256,6 +266,10 @@ const Product = ({ route, navigation }) => {
   function addProductToCart(product) {
     product['quantity'] = numberOfitems
     addToCart(product)
+  }
+
+  if (loading) {
+    return <Loading />
   }
 
   return (
@@ -277,14 +291,16 @@ const Product = ({ route, navigation }) => {
           <TouchableOpacity onPress={() => handleLike(product._id)}>
             <AntDesign
               name='heart'
-              style={tw`text-xl font-bold ml-2 text-gray-300`}
+              style={tw`text-xl font-bold ml-2 ${
+                liked ? ' text-red-400' : 'text-gray-400'
+              }`}
             />
           </TouchableOpacity>
         </View>
       </View>
       <ScrollView
         style={[tw`mb-4`]}
-        contentContainerStyle={[{ flexGrow: 1 }, tw``]}
+        contentContainerStyle={[{ flexGrow: 1 }, tw`pb-5`]}
         showsVerticalScrollIndicator={false}
         showsHorizontalScrollIndicator={false}
       >
@@ -298,7 +314,7 @@ const Product = ({ route, navigation }) => {
             >
               {product?.name <= 20
                 ? product?.name
-                : product?.name.slice(0, 20) + '...'}
+                : product?.name.slice(0, 15) + '...'}
             </Text>
             <View style={tw`flex flex-row`}>
               <EvilIcons name='star' style={tw`text-lg text-gray-400 mr-2`} />
@@ -314,11 +330,7 @@ const Product = ({ route, navigation }) => {
               styles.heading
             ]}
           >
-            {'\u20A6'}{' '}
-            {(product?.price * 415.16)
-              .toFixed(2)
-              .toString()
-              .replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+            {convertCurrency(product?.price * 22)}
           </Text>
         </View>
         <View
@@ -329,7 +341,7 @@ const Product = ({ route, navigation }) => {
         >
           <Image
             source={{ uri: product?.image[0] }}
-            resizeMode='contain'
+            resizeMode='cover'
             style={[
               tw`max-w-full`,
               { flex: 1, width: '100%', height: undefined }

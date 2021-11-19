@@ -14,6 +14,7 @@ import {
 import tw from '../lib/tailwind'
 import { useInfiniteQuery } from 'react-query'
 import axios from 'axios'
+import { convertCurrency } from '../actions/CurrencyConverter'
 
 LogBox.ignoreLogs(['Setting a timer'])
 
@@ -114,11 +115,7 @@ export default function InfiniteProducts({ navigation }) {
               styles.headers
             ]}
           >
-            {'\u20A6'}{' '}
-            {(item?.price * 415.16)
-              .toFixed(2)
-              .toString()
-              .replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+            {convertCurrency(item.price * 22)}
           </Text>
           <Text style={[tw`text-gray-400 text-sm`, styles.name]}>
             {item.sales ? `${item.sales} sold` : ''}{' '}

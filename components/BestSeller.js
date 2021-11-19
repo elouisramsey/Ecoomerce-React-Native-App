@@ -15,6 +15,7 @@ import ExpoFastImage from 'expo-fast-image'
 
 import { useQuery } from 'react-query'
 import axios from 'axios'
+import { convertCurrency } from '../actions/CurrencyConverter'
 
 const Bestseller = ({ navigation }) => {
   const { data, loading, error, isFetching } = useQuery(
@@ -74,8 +75,7 @@ const Bestseller = ({ navigation }) => {
           <Text
             style={[tw`text-base font-light text-gray-500 mt-3`, styles.price]}
           >
-            {'\u20A6'}
-            {(item.price * 22).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+            {convertCurrency(item.price * 22)}
           </Text>
         </View>
       </TouchableOpacity>

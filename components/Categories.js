@@ -16,6 +16,7 @@ import { useCartContext } from '../context/CartProvider'
 
 import { useQuery } from 'react-query'
 import axios from 'axios'
+import { convertCurrency } from '../actions/CurrencyConverter'
 
 export const Categories = ({ navigation }) => {
   const [selectedCategory, setSelectedCategory] = React.useState('MensFashion')
@@ -96,10 +97,7 @@ export const Categories = ({ navigation }) => {
 
             <View style={tw`flex flex-row w-full items-center`}>
               <Text style={[tw`text-lg font-bold text-base`, styles.price]}>
-                {'\u20A6'}
-                {(item.price * 22)
-                  .toString()
-                  .replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+                {convertCurrency(item.price * 22)}
               </Text>
 
               <TouchableOpacity

@@ -10,6 +10,8 @@ import EditProfile from '../screens/Profile/EditProfile'
 import SplashScreen from '../screens/SplashScreen'
 import { Easing } from 'react-native'
 import Login from '../screens/Login'
+import CreditCard from './cards/CreditCard'
+import Checkout from '../screens/checkout/Checkout'
 
 const Stack = createStackNavigator()
 
@@ -64,10 +66,16 @@ export const SignedInStack = () => {
       />
       <Stack.Screen name='Resetpassword' component={Resetpassword} />
       <Stack.Screen name='Search' component={Search} />
+      <Stack.Screen name='Checkout' component={Checkout} />
       <Stack.Screen name='SearchSuggestions' component={SearchSuggestions} />
       <Stack.Screen
         name='EditProfile'
         component={EditProfile}
+        options={{ gestureEnabled: true }}
+      />
+      <Stack.Screen
+        name='CreditCard'
+        component={CreditCard}
         options={{ gestureEnabled: true }}
       />
     </Stack.Navigator>

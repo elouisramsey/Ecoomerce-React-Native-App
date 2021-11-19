@@ -12,6 +12,7 @@ import Showbtn from '../shared/ShowBtn'
 
 import { useQuery } from 'react-query'
 import axios from 'axios'
+import { convertCurrency } from '../actions/CurrencyConverter'
 
 export default NewProducts = ({navigation}) => {
 const { data, loading, error, isFetching } = useQuery(
@@ -62,10 +63,7 @@ const { data, loading, error, isFetching } = useQuery(
                 <Text
                   style={[tw`text-sm font-light text-gray-500`, styles.price]}
                 >
-                  {'\u20A6'}
-                  {(item.price * 70)
-                    .toString()
-                    .replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+                  {convertCurrency(item.price * 22)}
                 </Text>
               </View>
             </TouchableOpacity>

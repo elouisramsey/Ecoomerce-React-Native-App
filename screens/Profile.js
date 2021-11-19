@@ -13,10 +13,8 @@ import {
 } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import tw from '../lib/tailwind'
-import { EvilIcons } from '@expo/vector-icons'
-import Button from '../shared/Button'
+import { EvilIcons, AntDesign } from '@expo/vector-icons'
 import { profileBottom, profileTop } from '../components/Data/ProfileData'
-import { AntDesign } from '@expo/vector-icons'
 
 import { getAuth, signOut } from 'firebase/auth'
 import {
@@ -27,6 +25,7 @@ import {
   where
 } from 'firebase/firestore'
 import { db } from '../firebase'
+import Button from '../shared/Button'
 
 export default function Profile({ navigation }) {
   const [name, setName] = useState('')
@@ -159,7 +158,10 @@ export default function Profile({ navigation }) {
                 Member since {date}
               </Text>
               <View style={tw``}>
-                <Pressable
+                <Button
+                  style={tw`justify-center items-center py-2 px-7 border rounded-sm shadow-sm bg-black`}
+                  textStyle={tw`text-sm font-bold capitalize tracking-wide text-white`}
+                  title='Edit Profile'
                   onPress={() =>
                     navigation.navigate('EditProfile', {
                       name: name,
@@ -171,18 +173,7 @@ export default function Profile({ navigation }) {
                       address: address
                     })
                   }
-                  style={tw`justify-center items-center py-2 px-7 border rounded-sm shadow-sm bg-black`}
-                >
-                  <Text
-                    style={[
-                      tw`text-sm font-bold capitalize tracking-wide text-white`,
-                      styles.paragraphs
-                    ]}
-                  >
-                    Edit account
-                  </Text>
-                </Pressable>
-                {/* <Button title='edit account' /> */}
+                />
               </View>
             </View>
           </View>
@@ -217,7 +208,10 @@ export default function Profile({ navigation }) {
         </View>
         <View style={tw`px-3`}>
           {profileBottom?.map((item) => (
-            <TouchableOpacity key={item.id}>
+            <TouchableOpacity
+              onPress={() => navigation.navigate(item.link)}
+              key={item.id}
+            >
               <View
                 style={tw`flex-row px-3 border-b border-solid border-gray-300 py-4 justify-between items-center`}
               >
@@ -237,19 +231,12 @@ export default function Profile({ navigation }) {
             </TouchableOpacity>
           ))}
         </View>
-        <Pressable
+        <Button
+          title='sign out'
           onPress={signout}
           style={tw`justify-center items-center py-2 px-7 border rounded-sm shadow-sm bg-red-500 mx-3 my-4 border-red-500`}
-        >
-          <Text
-            style={[
-              tw`text-sm font-bold capitalize tracking-wide text-white`,
-              styles.paragraphs
-            ]}
-          >
-            Logout
-          </Text>
-        </Pressable>
+          textStyle={tw`text-sm font-bold capitalize tracking-wide text-white`}
+        />
       </ScrollView>
     </SafeAreaView>
   )

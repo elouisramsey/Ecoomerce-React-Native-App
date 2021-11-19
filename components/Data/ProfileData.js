@@ -20,26 +20,32 @@ export const profileTop = [
 export const profileBottom = [
   {
     id: 1,
-    name: 'account details'
+    name: 'account details',
+    link: 'account'
   },
   {
     id: 2,
-    name: 'loyalty card & offers'
+    name: 'loyalty card & offers',
+    link: 'CreditCard'
   },
   {
     id: 3,
-    name: 'delivery information'
+    name: 'delivery information',
+    link: 'delivery'
   },
   {
     id: 4,
-    name: 'payment information'
+    name: 'payment information',
+    link: 'payment'
   },
   {
     id: 5,
-    name: 'language'
+    name: 'language',
+    link: 'language'
   },
   {
     id: 6,
-    name: 'privacy settings'
+    name: 'privacy settings',
+    link: 'privacy'
   }
 ]
